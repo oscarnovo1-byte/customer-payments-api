@@ -1,0 +1,20 @@
+@CustomerPayments.Api_HostAddress = http://localhost:5015
+
+GET {{CustomerPayments.Api_HostAddress}}/health
+Accept: text/plain
+
+###
+
+GET {{CustomerPayments.Api_HostAddress}}/api/v1/customers
+Accept: application/json
+
+###
+
+POST {{CustomerPayments.Api_HostAddress}}/api/v1/customers
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@test.com"
+}
