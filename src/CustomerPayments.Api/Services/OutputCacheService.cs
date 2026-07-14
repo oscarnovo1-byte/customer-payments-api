@@ -1,4 +1,4 @@
-using CustomerPayments.Api.Interfaces.Catching;
+using CustomerPayments.Api.Interfaces.Caching;
 using CustomerPayments.Infrastructure.Caching;
 using Microsoft.AspNetCore.OutputCaching;
 

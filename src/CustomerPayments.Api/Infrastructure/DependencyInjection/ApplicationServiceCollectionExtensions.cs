@@ -1,7 +1,7 @@
 using Asp.Versioning;
 using CustomerPayments.Api.Application.Interfaces;
 using CustomerPayments.Api.Application.Services;
-using CustomerPayments.Api.Interfaces.Catching;
+using CustomerPayments.Api.Interfaces.Caching;
 using CustomerPayments.Api.Interfaces.Services;
 using CustomerPayments.Api.Mappings;
 using CustomerPayments.Api.Options;

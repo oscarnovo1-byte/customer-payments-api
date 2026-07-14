@@ -1,4 +1,4 @@
-namespace CustomerPayments.Api.Interfaces.Catching;
+namespace CustomerPayments.Api.Interfaces.Caching;
 public interface ICacheService
 {
     Task InvalidateCustomersAsync(

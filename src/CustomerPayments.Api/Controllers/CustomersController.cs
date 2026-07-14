@@ -1,8 +1,7 @@
 using Asp.Versioning;
 using CustomerPayments.Api.DTOs;
-using CustomerPayments.Api.Interfaces.Catching;
+using CustomerPayments.Api.Interfaces.Caching;
 using CustomerPayments.Api.Interfaces.Services;
-using CustomerPayments.Api.Validators;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +21,6 @@ public sealed class CustomersController : ControllerBase
     private readonly IValidator<CreateCustomerRequest> _createCustomerValidator;
     private readonly IValidator<UpdateCustomerRequest> _updateCustomerValidator;
     private readonly IValidator<DeactivateCustomerRequest> _deactivateCustomerValidator;
-    private readonly IOutputCacheStore _outputCacheStore;
     private readonly ICacheService _cacheService;
 
     public CustomersController(
@@ -30,7 +28,6 @@ public sealed class CustomersController : ControllerBase
         IValidator<CreateCustomerRequest> createCustomerValidator,
         IValidator<UpdateCustomerRequest> updateCustomerValidator,
         IValidator<DeactivateCustomerRequest> deactivateCustomerValidator,
-        IOutputCacheStore outputCacheStore,
         ICacheService cacheService)
     {
         _customerService = customerService;
@@ -38,7 +35,6 @@ public sealed class CustomersController : ControllerBase
         _updateCustomerValidator = updateCustomerValidator;
         _deactivateCustomerValidator = deactivateCustomerValidator;
         _cacheService = cacheService;
-        _outputCacheStore = outputCacheStore;
     }
 
     [HttpGet]
@@ -54,7 +50,7 @@ public sealed class CustomersController : ControllerBase
         return Ok(customers);
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = "GetCustomerById")]
     [OutputCache(PolicyName = "CustomerByIdReadPolicy")]
     public async Task<ActionResult<CustomerDto>> GetByIdAsync(
         Guid id,
@@ -90,16 +86,14 @@ public sealed class CustomersController : ControllerBase
             request,
             cancellationToken);
 
-        await _outputCacheStore.EvictByTagAsync(
-            "customers-list",
+        await _cacheService.InvalidateCustomersAsync(
             cancellationToken);
 
-        await _outputCacheStore.EvictByTagAsync(
-            "customers-by-id",
-            cancellationToken);
+        var requestedVersion = HttpContext.GetRequestedApiVersion();
+        var version = requestedVersion?.MajorVersion ?? 1;
 
         return Created(
-            $"/api/v1/customers/{createdCustomer.Id}",
+            $"/api/v{version}/customers/{createdCustomer.Id}",
             createdCustomer);
     }
 
