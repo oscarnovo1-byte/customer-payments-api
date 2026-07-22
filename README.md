@@ -1,59 +1,56 @@
 # Customer Payments API
 
-A production-style ASP.NET Core REST API built to demonstrate modern backend development practices using a layered architecture, clean code principles, and production-ready design patterns.
+> Production-style ASP.NET Core Web API built with **.NET 10** to demonstrate modern backend engineering practices, clean architecture principles, security, testing and containerized deployment.
 
-This project was created as a portfolio application to showcase enterprise-level development practices including authentication, validation, exception handling, testing, caching, rate limiting and clean separation of responsibilities.
+## Highlights
 
----
-
-## What this project demonstrates
-
-- REST API design following best practices
-- SOLID principles
-- Dependency Injection
+- ASP.NET Core 10 REST API
+- JWT Authentication + Refresh Token Rotation
+- Dockerized application
+- Entity Framework Core + SQLite
 - Repository & Service Pattern
-- Entity Framework Core
-- JWT Authentication & Authorization
-- DTO Mapping with AutoMapper
-- Validation with FluentValidation
-- Global Exception Handling
+- AutoMapper
+- FluentValidation
+- Global Exception Handling (RFC 7807)
 - API Versioning
 - Output Caching
 - Rate Limiting
-- Health Checks
 - Correlation ID
-- Unit Testing
-- Integration Testing
-- Clean and maintainable architecture
+- Health Checks
+- Unit & Integration Tests
 
----
+## Project Overview
+
+Customer Payments API is a portfolio project that demonstrates enterprise-grade backend development practices using ASP.NET Core.
 
 ## Features
 
-- Customer management
-- Payment management
+- Customer Management
+- Payment Management
 - JWT Authentication
+- Refresh Token Rotation
+- Refresh Token Revocation
+- Refresh Tokens stored as SHA-256 hashes
+- Role-based Authorization
 - Soft Delete
-- Optimistic Concurrency (Version)
-- Repository Pattern
-- Service Layer
+- Optimistic Concurrency
 - AutoMapper
 - FluentValidation
-- Global Exception Handling using `IExceptionHandler`
-- RFC 7807 Problem Details responses
+- Global Exception Handling
+- RFC 7807 Problem Details
 - API Versioning
 - Output Cache
 - Rate Limiting
+- Correlation ID
 - Health Checks
-- Swagger / OpenAPI
+- Swagger/OpenAPI
+- Docker Support
 - Unit Tests
 - Integration Tests
 
----
-
 ## Architecture
 
-```
+```text
 src/
 └── CustomerPayments.Api
     ├── Application
@@ -63,7 +60,7 @@ src/
     ├── DTOs
     ├── ExceptionHandling
     ├── Extensions
-    ├── Filters
+    ├── Infrastructure
     ├── Interfaces
     ├── Mappings
     ├── Middleware
@@ -77,243 +74,95 @@ tests/
 └── CustomerPayments.IntegrationTests
 ```
 
-### Layers
-
-- **Controllers** expose the HTTP endpoints.
-- **Services** implement business rules.
-- **Repositories** encapsulate data access.
-- **Domain** contains the business entities.
-- **DTOs** define the API contracts.
-- **Validators** validate incoming requests.
-- **Mappings** translate between entities and DTOs.
-
----
-
 ## Technologies
 
-| Technology | Description |
-|------------|-------------|
-| .NET 10 | Backend framework |
-| ASP.NET Core Web API | REST API |
+| Technology | Purpose |
+|------------|---------|
+| .NET 10 | Backend Framework |
+| ASP.NET Core | REST API |
 | Entity Framework Core | ORM |
 | SQLite | Database |
 | JWT | Authentication |
-| AutoMapper | Object Mapping |
-| FluentValidation | Request Validation |
-| Swagger / OpenAPI | API Documentation |
+| Docker | Containerization |
+| AutoMapper | DTO Mapping |
+| FluentValidation | Validation |
+| Swagger | API Documentation |
 | xUnit | Unit Testing |
 | Moq | Mocking |
 | FluentAssertions | Assertions |
-| WebApplicationFactory | Integration Testing |
-
----
 
 ## Authentication
 
-Authenticate using the login endpoint:
+- POST /api/v1/auth/login
+- POST /api/v1/auth/refresh
+- POST /api/v1/auth/revoke
 
-```
-POST /api/v1/auth/login
-```
+Refresh Tokens are rotated and stored as SHA-256 hashes.
 
-Example credentials (Development):
-
-```
-Email: admin@customerpayments.com
-Password: ********
-```
-
-> **Note**
->
-> For security reasons, credentials should be provided using User Secrets or environment variables rather than hardcoded configuration.
-
----
-
-## REST Endpoints
-
-### Authentication
-
-| Method | Endpoint |
-|---------|----------|
-| POST | `/api/v1/auth/login` |
-
-### Customers
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/customers` | Returns a paginated list of active customers |
-| GET | `/api/v1/customers/{id}` | Returns a customer by ID |
-| POST | `/api/v1/customers` | Creates a new customer |
-| PUT | `/api/v1/customers/{id}` | Updates an existing customer |
-| PATCH | `/api/v1/customers/{id}/deactivate` | Deactivates a customer using a soft-delete strategy |
-
-#### Deactivate a customer
-
-Customers are not physically deleted from the database. The API uses a
-soft-delete strategy that marks the customer as inactive.
-
-```http
-PATCH /api/v1/customers/{id}/deactivate
-Authorization: Bearer {token}
-Content-Type: application/json
-
-### Payments
-
-| Method | Endpoint |
-|---------|----------|
-| GET | `/api/v1/customers/{customerId}/payments` |
-| POST | `/api/v1/customers/{customerId}/payments` |
-
----
-
-## Filtering, Sorting and Pagination
-
-Example:
-
-```
-GET /api/v1/customers?pageNumber=1&pageSize=10&search=john&sortBy=lastName&sortDirection=desc
-```
-
-Supported features:
-
-- Pagination
-- Search
-- Sorting
-
----
-
-## Running the project
-
-Restore packages:
+## Running Locally
 
 ```bash
 dotnet restore
-```
-
-Build:
-
-```bash
 dotnet build
-```
-
-Run:
-
-```bash
 dotnet run --project src/CustomerPayments.Api
 ```
 
-Open Swagger:
+Swagger:
+https://localhost:5001/swagger
 
-```
-https://localhost:<port>/swagger
-```
-
-Health Check:
-
-```
-https://localhost:<port>/health
-```
-
-### Database migrations
-
-In the Development environment, pending Entity Framework Core migrations
-are applied automatically when the application starts.
-
-They can also be applied manually:
+## Running with Docker
 
 ```bash
-dotnet ef database update \
-  --project src/CustomerPayments.Api \
-  --startup-project src/CustomerPayments.Api
-  
----
+docker compose up --build
+docker compose up -d
+docker compose down
+docker compose down -v
+```
 
-## Running the tests
+Swagger:
+http://localhost:8080/swagger
 
-Run all tests:
+## Environment Variables
+
+```env
+JWT_SECRET_KEY=your-secret-key
+DEMO_USER_ID=1
+DEMO_USER_EMAIL=admin@customerpayments.com
+DEMO_USER_PASSWORD=your-password
+```
+
+## Database Migrations
 
 ```bash
-dotnet test
+dotnet ef database update --project src/CustomerPayments.Api --startup-project src/CustomerPayments.Api
 ```
-
-Run Unit Tests:
-
-```bash
-dotnet test tests/CustomerPayments.UnitTests
-```
-
-Run Integration Tests:
-
-```bash
-dotnet test tests/CustomerPayments.IntegrationTests
-```
-
----
-
-## Error Handling
-
-The API uses centralized exception handling through `IExceptionHandler` and returns standardized **RFC 7807 Problem Details** responses.
-
-Example:
-
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc9110",
-  "title": "Validation failed.",
-  "status": 400,
-  "errors": {
-    "FirstName": [
-      "First Name is required."
-    ]
-  }
-}
-```
-
----
 
 ## Testing
 
-The solution includes:
+```bash
+dotnet test
+dotnet test tests/CustomerPayments.UnitTests
+dotnet test tests/CustomerPayments.IntegrationTests
+```
 
-- Unit Tests for business logic
-- Integration Tests using `WebApplicationFactory`
-- SQLite In-Memory database for integration tests
-- Moq for dependency mocking
-- FluentAssertions for expressive assertions
+## Security
 
----
-
-## Design Goals
-
-This project focuses on demonstrating enterprise backend development practices rather than business complexity.
-
-Key objectives include:
-
-- Clean Architecture
-- SOLID principles
-- Separation of Concerns
-- Dependency Injection
-- Testability
-- Maintainability
-- Production-ready API conventions
-- Clean and readable code
-
----
+- JWT Authentication
+- Refresh Token Rotation
+- Token Revocation
+- SHA-256 Refresh Token hashing
+- Role-based Authorization
+- FluentValidation
+- Correlation IDs
 
 ## Future Improvements
 
-Possible enhancements include:
-
-- Refresh Tokens
-- Docker support
-- CI/CD pipeline
+- CI/CD Pipeline
 - OpenTelemetry
-- Serilog integration
-- Role-based authorization
-- API metrics
-- Audit logging
-
----
+- Distributed Cache (Redis)
+- API Metrics
+- Audit Logging
+- Multi-factor Authentication
 
 ## License
 

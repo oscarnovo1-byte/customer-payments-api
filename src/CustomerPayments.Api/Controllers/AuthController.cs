@@ -56,4 +56,42 @@ public sealed class AuthController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpPost("refresh")]
+    [EnableRateLimiting("AuthPolicy")]
+    public async Task<ActionResult<LoginResponse>> Refresh(
+        RefreshTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        var response =
+            await _authenticationService.RefreshAsync(
+                request,
+                cancellationToken);
+
+        if (response is null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(response);
+    }
+
+    [HttpPost("revoke")]
+    [EnableRateLimiting("AuthPolicy")]
+    public async Task<IActionResult> Revoke(
+        RevokeRefreshTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        var revoked =
+            await _authenticationService.RevokeAsync(
+                request,
+                cancellationToken);
+
+        if (!revoked)
+        {
+            return Unauthorized();
+        }
+
+        return NoContent();
+    }    
 }

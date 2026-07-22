@@ -7,5 +7,15 @@ public sealed record LoginRequest(
 
 public sealed record LoginResponse(
     string AccessToken,
-    DateTime ExpiresAtUtc
+    DateTime AccessTokenExpiresAtUtc,
+    string RefreshToken,
+    DateTime RefreshTokenExpiresAtUtc
+);
+
+public sealed record RefreshTokenRequest(
+    string RefreshToken
+);
+
+public sealed record RevokeRefreshTokenRequest(
+    string RefreshToken
 );

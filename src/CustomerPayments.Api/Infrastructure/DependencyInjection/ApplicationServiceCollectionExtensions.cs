@@ -61,7 +61,8 @@ public static class ApplicationServiceCollectionExtensions
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IPaymentService, PaymentService>();
-        services.AddScoped<ICacheService, OutputCacheService>();  
+        services.AddScoped<ICacheService, OutputCacheService>();
+        services.AddSingleton<IRefreshTokenService, RefreshTokenService>(); 
 
         services.AddAutoMapper(config =>
         {

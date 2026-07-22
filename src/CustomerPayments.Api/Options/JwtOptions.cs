@@ -18,4 +18,7 @@ public sealed class JwtOptions
 
     [Range(1, 1440)]
     public int ExpirationMinutes { get; init; }
+
+    [Range(1, 90)]
+    public int RefreshTokenExpirationDays { get; init; }
 }

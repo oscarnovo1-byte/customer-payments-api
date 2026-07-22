@@ -24,7 +24,7 @@ public class CustomersEndpointTests : IClassFixture<CustomerPaymentsApiFactory>
     public async Task PostCustomer_ShouldReturnCreated()
     {
         await AuthenticateAsync();
-        
+
         var unique = Guid.NewGuid().ToString("N");
         var email = $"john.doe.{unique}@test.com";
 
@@ -208,23 +208,6 @@ public class CustomersEndpointTests : IClassFixture<CustomerPaymentsApiFactory>
         customer!.Id.Should().Be(createdCustomer.Id);
         customer.Email.Should().Be(email);
     }
-    private async Task AuthenticateAsync()
-    {
-        var loginRequest = new LoginRequest(
-            "admin@customerpayments.com",
-            "Admin123!");
-
-        var response = await _client.PostAsJsonAsync(
-            "/api/v1/auth/login",
-            loginRequest);
-
-        response.EnsureSuccessStatusCode();
-
-        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
-
-        _client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", loginResponse!.AccessToken);
-    }
 
     [Fact]
     public async Task GetCustomerById_ShouldReturnUnauthorized_WhenTokenIsMissing()
@@ -260,5 +243,37 @@ public class CustomersEndpointTests : IClassFixture<CustomerPaymentsApiFactory>
             $"customer creation failed. Response body: {body}");
 
         return (await response.Content.ReadFromJsonAsync<CustomerDto>())!;
+    }
+
+    private async Task AuthenticateAsync()
+    {
+        var loginRequest = new
+        {
+            Email = "demo@customerpayments.com",
+            Password = "DemoPassword123!"
+        };
+
+        var response = await _client.PostAsJsonAsync(
+            "/api/v1/auth/login",
+            loginRequest);
+
+        var responseBody = await response.Content.ReadAsStringAsync();
+
+        Assert.True(
+            response.IsSuccessStatusCode,
+            $"Login failed with {(int)response.StatusCode} " +
+            $"{response.StatusCode}. Body: {responseBody}");
+
+        var loginResponse =
+            await response.Content.ReadFromJsonAsync<LoginResponse>();
+
+        Assert.NotNull(loginResponse);
+        Assert.False(
+            string.IsNullOrWhiteSpace(loginResponse.AccessToken));
+
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue(
+                "Bearer",
+                loginResponse.AccessToken);
     }
 }

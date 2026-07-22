@@ -1,0 +1,35 @@
+services:
+  customer-payments-api:
+    container_name: customer-payments-api
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_HTTP_PORTS: 8080
+
+      ConnectionStrings__DefaultConnection: "Data Source=/app/data/customer-payments.db"
+
+      Jwt__Issuer: CustomerPayments.Api
+      Jwt__Audience: CustomerPayments.Client
+      Jwt__SecretKey: ${JWT_SECRET_KEY}
+      Jwt__ExpirationMinutes: 15
+      Jwt__RefreshTokenExpirationDays: 7
+
+      DemoUser__UserId: "1"
+      DemoUser__Email: "admin@customerpayments.com"
+      DemoUser__Password: ${DEMO_USER_PASSWORD}
+      DemoUser__Role: "Admin"
+
+    volumes:
+      - customer-payments-data:/app/data
+
+    restart: unless-stopped
+
+volumes:
+  customer-payments-data:

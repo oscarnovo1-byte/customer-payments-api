@@ -60,8 +60,8 @@ public sealed class CorrelationIdTests : IClassFixture<CustomerPaymentsApiFactor
     private async Task AuthenticateAsync()
     {
         var loginRequest = new CustomerPayments.Api.DTOs.LoginRequest(
-            "admin@customerpayments.com",
-            "Admin123!");
+            "demo@customerpayments.com",
+            "DemoPassword123!");
 
         var response = await _client.PostAsJsonAsync(
             "/api/v1/auth/login",

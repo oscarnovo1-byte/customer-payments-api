@@ -16,10 +16,16 @@ public sealed class CorrelationIdMiddleware
     {
         var correlationId = GetOrCreateCorrelationId(context);
 
-        context.Items[CorrelationIdConstants.PropertyName] = correlationId;
-        context.Response.Headers[CorrelationIdConstants.HeaderName] = correlationId;
+        context.TraceIdentifier = correlationId;
 
-        using (LogContext.PushProperty("CorrelationId", correlationId))
+        context.Items[CorrelationIdConstants.PropertyName] = correlationId;
+
+        context.Response.Headers[
+            CorrelationIdConstants.HeaderName] = correlationId;
+
+        using (LogContext.PushProperty(
+            CorrelationIdConstants.PropertyName,
+            correlationId))
         {
             await _next(context);
         }

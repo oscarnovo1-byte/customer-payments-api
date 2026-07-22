@@ -22,6 +22,7 @@ public static class InfrastructureServiceCollectionExtensions
 
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentRequestContext, CurrentRequestContext>();

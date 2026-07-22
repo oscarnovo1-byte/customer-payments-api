@@ -122,8 +122,8 @@ public class PaymentsEndpointTests : IClassFixture<CustomerPaymentsApiFactory>
     private async Task AuthenticateAsync()
     {
         var loginRequest = new LoginRequest(
-            "admin@customerpayments.com",
-            "Admin123!");
+            "demo@customerpayments.com",
+            "DemoPassword123!");
 
         var response = await _client.PostAsJsonAsync(
             "/api/v1/auth/login",

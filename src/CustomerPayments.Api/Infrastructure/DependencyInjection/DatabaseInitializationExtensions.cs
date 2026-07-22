@@ -8,7 +8,11 @@ public static class DatabaseInitializationExtensions
     public static async Task ApplyDatabaseMigrationsAsync(
         this WebApplication app)
     {
-        if (!app.Environment.IsDevelopment())
+        var shouldApplyMigrations =
+            app.Environment.IsDevelopment()
+            || app.Environment.IsEnvironment("Docker");
+
+        if (!shouldApplyMigrations)
         {
             return;
         }
